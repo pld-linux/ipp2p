@@ -1,7 +1,5 @@
 #
 # Conditional build:
-%bcond_without	kernel		# don't build kernel modules
-%bcond_without	smp		# don't build SMP module
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
@@ -16,8 +14,8 @@ Version:	0.5c
 Release:	%{_rel}@%{_kernel_ver_str}
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_name}.%{version}.tar.gz
-# Source0-md5:	5cf214c6132d88ac5f0c859e6b8ae792
+Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_name}-%{version}_2.6.tar.gz
+# Source0-md5:	d4768dfdd872aa000971744bc9dc464f
 URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 %{?with_userspace:BuildRequires:	iptables-devel}
 BuildRequires:	kernel-module-build
@@ -166,7 +164,7 @@ install -d build-done/{SMP,UP}
 	SUBDIRS=$PWD \
 	O=$PWD \
 	%{?with_verbose:V=1}
-mv ipt_%{_orig_name}.ko build-done/UP/ipt_%{_orig_name}.up
+    mv ipt_%{_orig_name}.ko build-done/UP/ipt_%{_orig_name}.up
     
     %{__make} -C %{_kernelsrcdir} mrproper \
 	SUBDIRS=$PWD \
@@ -195,15 +193,11 @@ install -d $RPM_BUILD_ROOT%{_libdir}/iptables
 install libipt_%{_orig_name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 %endif
 
-%if %{with kernel}
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/net/ipv4/netfilter
 install build-done/UP/ipt_%{_orig_name}.up \
 	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
-%if %{with smp} && %{with dist_kernel}
 install build-done/SMP/ipt_%{_orig_name}.ko \
 	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
-%endif
-%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -223,17 +217,13 @@ rm -rf $RPM_BUILD_ROOT
 %post -n iptables-ipp2p
 %postun -n iptables-ipp2p
 
-%if %{with kernel}
 %files
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/*
 
-%if %{with smp} && %{with dist_kernel}
 %files -n kernel-smp-net-ipp2p
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/*
-%endif
-%endif
 
 %if %{with userspace}
 %files -n iptables-ipp2p

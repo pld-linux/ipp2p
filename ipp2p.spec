@@ -6,18 +6,17 @@
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
-%define		_orig_name	ipp2p
-%define		_rel	1
 #
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
-Name:		kernel-net-ipp2p
-Epoch:		1
+Name:		ipp2p
 Version:	0.6
-Release:	%{_rel}@%{_kernel_ver_str}
+%define	_rel	1
+Release:	%{_rel}
+Epoch:		1
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_name}.06.tar.gz
+Source0:	http://rnvs.informatik.uni-leipzig.de/ipp2p/downloads/%{name}.06.tar.gz
 # Source0-md5:	9ac3ab4f48755500dbb0020292088efe
 URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 %{?with_userspace:BuildRequires:	iptables-devel}
@@ -26,8 +25,6 @@ BuildRequires:	kernel-module-build >= 2.6.7
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.153
 BuildRequires:	sed >= 4.0
-%{?with_dist_kernel:%requires_releq_kernel_up}
-Requires(post,postun):	/sbin/depmod
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -43,9 +40,43 @@ package working as already described. IPP2P works together with
 connection tracking and connection marking - in that way you can catch
 the bigger part of all P2P packets and limit the bandwidth rate.
 
+%description -l pl
+IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
+zwi±zanego z dzieleniem plików P2P. G³ownym celem tworzenia IPP2P jest
+udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
+ruchu w inteligentny sposób. Nie jest nim zablokowanie ca³ego ruchu
+P2P, ale umo¿liwienie ograniczenia tego ruchu do danej przepustowo¶ci.
+W tym celu IPP2P przeszukuje zawarto¶æ (payload) pakietów TCP pod
+k±tem wzorców sygnalizuj±cych sieci P2P. Je¶li tych wzorców nie ma w
+pakietach, musz± byæ u¿yte inne rozszerzenia netfiltra, aby IPP2P
+dzia³a³o zgodnie z opisem. IPP2P wspó³pracuje ze ¶ledzeniem oraz
+znakowaniem po³±czeñ - w ten sposób mo¿na wychwyciæ wiêksz± czê¶æ
+pakietów P2P i ograniczyæ wykorzystanie ³±cza przez nie.
+
+%package -n kernel-net-ipp2p
+Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
+Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
+Release:	%{_rel}@%{_kernel_ver_str}
+Group:		Base/Kernel
+%{?with_dist_kernel:%requires_releq_kernel_up}
+Requires(post,postun):	/sbin/depmod
+
+%description -n kernel-net-ipp2p
+IPP2P is a netfilter extension to identify P2P filesharing traffic.
+The main goal for developing IPP2P was giving the adminstrator a
+dynamic tool to filter the traffic in an intelligent way. So it
+doesn't aim at prohibiting all P2P traffic but make it possible to
+shape this traffic to a given rate. For this purpose IPP2P searchs the
+payload of TCP packets for signaling patterns of P2P networks. As
+these patterns are not being present in all P2P packets we had to use
+some other netfilter extensions in order to get the whole IPP2P
+package working as already described. IPP2P works together with
+connection tracking and connection marking - in that way you can catch
+the bigger part of all P2P packets and limit the bandwidth rate.
+
 This package contains Linux kernel module.
 
-%description -l pl
+%description -n kernel-net-ipp2p -l pl
 IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
 zwi±zanego z dzieleniem plików P2P. G³ownym celem tworzenia IPP2P jest
 udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
@@ -138,7 +169,7 @@ Ten pakiet zawiera modu³ iptables potrzebny do sterowania modu³em
 j±dra IPP2P.
 
 %prep
-%setup -q -n %{_orig_name}
+%setup -q -n %{name}
 sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 
 %build
@@ -166,7 +197,7 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
     %{__make} -C %{_kernelsrcdir} modules \
 	M=$PWD O=$PWD \
 	%{?with_verbose:V=1}
-    mv ipt_%{_orig_name}{,-$cfg}.ko
+    mv ipt_%{name}{,-$cfg}.ko
 done
 %endif
 
@@ -175,36 +206,36 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with userspace}
 install -d $RPM_BUILD_ROOT%{_libdir}/iptables
-install libipt_%{_orig_name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
+install libipt_%{name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 %endif
 
 %if %{with kernel}
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/net/ipv4/netfilter
-install ipt_%{_orig_name}-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
+install ipt_%{name}-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
+	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{name}.ko
 %if %{with smp} && %{with dist_kernel}
-install ipt_%{_orig_name}-smp.ko \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
+install ipt_%{name}-smp.ko \
+	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{name}.ko
 %endif
 %endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post
+%post -n kernel-net-ipp2p
 %depmod %{_kernel_ver}
 
-%postun
+%postun -n kernel-net-ipp2p
 %depmod %{_kernel_ver}
 
 %post -n kernel-smp-net-ipp2p
-%depmod %{_kernel_ver}
+%depmod %{_kernel_ver}smp
 
 %postun -n kernel-smp-net-ipp2p
-%depmod %{_kernel_ver}
+%depmod %{_kernel_ver}smp
 
 %if %{with kernel}
-%files
+%files -n kernel-net-ipp2p
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/*
 

@@ -84,7 +84,7 @@ Requires:	iptables
 # iptables module
 cat << EOF > Makefile
 CC		= %{__cc}
-CFLAGS		= %{rpmcflags} -fPIC -DNETFILTER_VERSION=\\"1.2.9\\"
+CFLAGS		= %{rpmcflags} -fPIC -DMODULE -D__KERNEL__ %{?with_smp:-D__SMP__} -DNETFILTER_VERSION=\\"1.2.9\\"
 INCPATH		= -I%{_includedir}/iptables
 LD		= %{__ld}
 .SUFFIXES:	.c .o .so

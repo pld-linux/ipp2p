@@ -144,7 +144,7 @@ j±dra IPP2P.
 # iptables module
 cat << EOF > Makefile
 CC		= %{__cc}
-CFLAGS		= %{rpmcflags} -fPIC -DNETFILTER_VERSION=\\"1.2.9\\"
+CFLAGS		= %{rpmcflags} -fPIC -DNETFILTER_VERSION=\\"1.2.10\\"
 INCPATH		= -I%{_includedir}
 LD		= %{__ld}
 .SUFFIXES:	.c .o .so

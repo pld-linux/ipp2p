@@ -7,7 +7,7 @@
 %bcond_with	verbose		# verbose build (V=1)
 #
 %define		_orig_name	ipp2p
-%define		_rel 1
+%define		_rel	2
 %define		no_install_post_compress_modules	1
 #
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
@@ -25,6 +25,7 @@ URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 %if %{with kernel} && %{with dist_kernel}
 BuildRequires:	kernel-module-build
 %endif
+BuildRequires:	rpmbuild(macros) >= 1.153
 %{?with_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -159,28 +160,22 @@ EOF
 
 %if %{with kernel}
 # kernel module(s)
-rm -rf built
-mkdir built
 for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}; do
     if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
 	exit 1
     fi
-    %{__make} -C %{_kernelsrcdir} mrproper \
-	SUBDIRS=$PWD \
-	O=$PWD \
-	RCS_FIND_IGNORE="-name built" \
-	%{?with_verbose:V=1}
     rm -rf include
     install -d include/{linux,config}
     ln -sf %{_kernelsrcdir}/config-$cfg .config
-    ln -sf %{_kernelsrcdir}/include/linux/autoconf-${cfg}.h include/linux/autoconf.h
+    ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h include/linux/autoconf.h
+    ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
     touch include/config/MARKER
     echo "obj-m := ipt_%{_orig_name}.o" > Makefile
-    %{__make} -C %{_kernelsrcdir} modules \
-	SUBDIRS=$PWD \
-	O=$PWD \
+    %{__make} -C %{_kernelsrcdir} clean modules \
+	RCS_FIND_IGNORE="-name '*.ko' -o" \
+	M=$PWD O=$PWD \
 	%{?with_verbose:V=1}
-    mv ipt_%{_orig_name}.ko built/ipt_%{_orig_name}-$cfg.ko
+    mv ipt_%{_orig_name}{,-$cfg}.ko
 done
 %endif
 
@@ -194,10 +189,10 @@ install libipt_%{_orig_name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 
 %if %{with kernel}
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/net/ipv4/netfilter
-install built/ipt_%{_orig_name}-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
+install ipt_%{_orig_name}-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
 	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
 %if %{with smp} && %{with dist_kernel}
-install built/ipt_%{_orig_name}-smp.ko \
+install ipt_%{_orig_name}-smp.ko \
 	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
 %endif
 %endif

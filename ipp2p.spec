@@ -30,7 +30,7 @@ Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 rm -rf build-done
 install -d build-done/{UP/SMP}
 ## iptables
-#%%{__make} libipt_ipp2p 
+%{__make} libipt_ipp2p.o
 ## kernel
 ln -sf %{_kernelsrcdir}/config-up .config
 rm -rf include
@@ -39,7 +39,20 @@ ln -sf %{_kernelsrcdir}/include/linux/autoconf.h  include/linux/autoconf.h
 ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
 touch include/config/MARKER
 echo 'obj-m := ipt_ipp2p.o' >Makefile
-%{__make} -C %{_kernelsrcdir} SUBDIR=$PWD O=$PWD V=1 modules
+%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 modules
+mv ipt_ipp2p.ko build-done/UP/
+
+%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 mrproper
+
+ln -sf %{_kernelsrcdir}/config-smp .config
+rm -rf include
+install -d include/{linux,config}
+ln -sf %{_kernelsrcdir}/include/linux/autoconf.h  include/linux/autoconf.h 
+ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
+touch include/config/MARKER
+echo 'obj-m := ipt_ipp2p.o' >Makefile
+%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 modules
+mv ipt_ipp2p.ko build-done/SMP/
 
 %install
 rm -rf $RPM_BUILD_ROOT

@@ -1,19 +1,18 @@
 #
 # Conditional build:
-%bcond_without	dist_kernel	# allow non-distribution kernel
 %bcond_without	kernel		# don't build kernel modules
 %bcond_without	smp		# don't build SMP module
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
 %define		_orig_name	ipp2p
-%define		_rel 1
+%define		_rel 2
 %define		no_install_post_compress_modules	1
 #
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtru pakietów identyfikuj±ce ruch P2P
 Name:		kernel-net-ipp2p
-Version:	05b
+Version:	0.5c
 Release:	%{_rel}@%{_kernel_ver_str}
 License:	GPL
 Group:		Base/Kernel
@@ -21,10 +20,8 @@ Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_n
 # Source0-md5:	5cf214c6132d88ac5f0c859e6b8ae792
 URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 %{?with_userspace:BuildRequires:	iptables-devel}
-%if %{with kernel} && %{with dist_kernel}
 BuildRequires:	kernel-module-build
-%endif
-%{?with_dist_kernel:%requires_releq_kernel_up}
+Requires:	kernel-up
 Requires(post,postun):	/sbin/depmod
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -63,7 +60,7 @@ Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtru pakietów identyfikuj±ce ruch P2P
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{?with_dist_kernel:%requires_releq_kernel_smp}
+Requires:	kernel-smp
 Requires(post,postun):	/sbin/depmod
 
 %description -n kernel-smp-net-ipp2p
@@ -156,29 +153,39 @@ EOF
 %{__make}
 %endif
 
-%if %{with kernel}
-# kernel module(s)
-for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}; do
-    if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
-	exit 1
-    fi
+install -d build-done/{SMP,UP}
+## UP
     rm -rf include
     install -d include/{linux,config}
-    %{__make} -C %{_kernelsrcdir} mrproper \
-	SUBDIRS=$PWD \
-	O=$PWD \
-	%{?with_verbose:V=1}
-    ln -sf %{_kernelsrcdir}/config-$cfg .config
-    %{?with_dist_kernel:ln -sf %{_kernelsrcdir}/include/linux/autoconf-${cfg}.h include/linux/autoconf.h}
+    ln -sf %{_kernelsrcdir}/config-up .config
+    install -d include/{linux,config}
+    ln -sf %{_kernelsrcdir}/include/linux/autoconf-up.h include/linux/autoconf.h
     touch include/config/MARKER
     echo "obj-m := ipt_%{_orig_name}.o" > Makefile
     %{__make} -C %{_kernelsrcdir} modules \
 	SUBDIRS=$PWD \
 	O=$PWD \
 	%{?with_verbose:V=1}
-    mv ipt_%{_orig_name}.ko ipt_%{_orig_name}-$cfg.ko
-done
-%endif
+mv ipt_%{_orig_name}.ko build-done/UP/ipt_%{_orig_name}.up
+    
+    %{__make} -C %{_kernelsrcdir} mrproper \
+	SUBDIRS=$PWD \
+	O=$PWD \
+	%{?with_verbose:V=1}
+
+## SMP
+    rm -rf include
+    install -d include/{linux,config}
+    ln -sf %{_kernelsrcdir}/config-smp .config
+    install -d include/{linux,config}
+    ln -sf %{_kernelsrcdir}/include/linux/autoconf-smp.h include/linux/autoconf.h
+    touch include/config/MARKER
+    echo "obj-m := ipt_%{_orig_name}.o" > Makefile
+    %{__make} -C %{_kernelsrcdir} modules \
+	SUBDIRS=$PWD \
+	O=$PWD \
+	%{?with_verbose:V=1}
+    mv ipt_%{_orig_name}.ko build-done/SMP/ipt_%{_orig_name}.ko
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -190,10 +197,10 @@ install libipt_%{_orig_name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 
 %if %{with kernel}
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/net/ipv4/netfilter
-install ipt_%{_orig_name}-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
+install build-done/UP/ipt_%{_orig_name}.up \
 	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
 %if %{with smp} && %{with dist_kernel}
-install ipt_%{_orig_name}-smp.ko \
+install build-done/SMP/ipt_%{_orig_name}.ko \
 	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
 %endif
 %endif

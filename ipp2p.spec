@@ -189,12 +189,12 @@ install libipt_%{_orig_name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 %endif
 
 %if %{with kernel}
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}{,smp}/kernel/net/ipv4/netfilter
+install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/net/ipv4/netfilter
 install ipt_%{_orig_name}-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
+	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
 %if %{with smp} && %{with dist_kernel}
 install ipt_%{_orig_name}-smp.ko \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}smp/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
+	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
 %endif
 %endif
 
@@ -202,16 +202,16 @@ install ipt_%{_orig_name}-smp.ko \
 rm -rf $RPM_BUILD_ROOT
 
 %post
-%depmod %{_kernel_ver_str}
+%depmod %{_kernel_ver}
 
 %postun
-%depmod %{_kernel_ver_str}
+%depmod %{_kernel_ver}
 
 %post -n kernel-smp-net-ipp2p
-%depmod %{_kernel_ver_str}
+%depmod %{_kernel_ver}
 
 %postun -n kernel-smp-net-ipp2p
-%depmod %{_kernel_ver_str}
+%depmod %{_kernel_ver}
 
 %post -n iptables-ipp2p
 %postun -n iptables-ipp2p
@@ -219,12 +219,12 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with kernel}
 %files
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver_str}/kernel/net/ipv4/netfilter/*
+/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/*
 
 %if %{with smp} && %{with dist_kernel}
 %files -n kernel-smp-net-ipp2p
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver_str}smp/kernel/net/ipv4/netfilter/*
+/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/*
 %endif
 %endif
 

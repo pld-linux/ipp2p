@@ -22,7 +22,7 @@ Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_n
 URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 %{?with_userspace:BuildRequires:	iptables-devel}
 %if %{with kernel} && %{with dist_kernel}
-BuildRequires:	kernel-module-build
+BuildRequires:	kernel-module-build >= 2.6.7
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.153
 BuildRequires:	sed >= 4.0

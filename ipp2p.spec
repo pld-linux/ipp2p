@@ -7,7 +7,7 @@
 %bcond_with	verbose		# verbose build (V=1)
 #
 %define		_orig_name	ipp2p
-%define		_rel 1
+%define		_rel 2
 %define		no_install_post_compress_modules	1
 #
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
@@ -169,7 +169,7 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
 	O=$PWD \
 	%{?with_verbose:V=1}
     ln -sf %{_kernelsrcdir}/config-$cfg .config
-    %{?with_dist_kernel:ln -sf %{_kernelsrcdir}/include/linux/autoconf-${cfg}.h include/linux/autoconf.h}
+    ln -sf %{_kernelsrcdir}/include/linux/autoconf-${cfg}.h include/linux/autoconf.h
     touch include/config/MARKER
     echo "obj-m := ipt_%{_orig_name}.o" > Makefile
     %{__make} -C %{_kernelsrcdir} modules \

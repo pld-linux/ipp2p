@@ -1,13 +1,13 @@
 %define		_orig_name	ipp2p
 Summary:	ipp2p
 Summary(pl):	ipp2p
-Name:		%{_origname}
+Name:		%{_orig_name}
 Version:	05b
 Release:	1
 License:	GPL
-Group:		Kernel
-######		Unknown group!
-Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{name}%{version}.tar.gz
+Group:		Base/Kernel
+Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{name}.%{version}.tar.gz
+# Source0-md5:	5cf214c6132d88ac5f0c859e6b8ae792
 BuildRequires:	kernel-module-build
 BuildRequires:	iptables-devel
 #Requires:

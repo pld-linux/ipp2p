@@ -214,9 +214,6 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n kernel-smp-net-ipp2p
 %depmod %{_kernel_ver}
 
-%post -n iptables-ipp2p
-%postun -n iptables-ipp2p
-
 %if %{with kernel}
 %files
 %defattr(644,root,root,755)

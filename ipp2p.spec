@@ -11,7 +11,7 @@
 %define		no_install_post_compress_modules	1
 #
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
-Summary(pl):	IPP2P - rozszerzenie filtru pakietów identyfikuj±ce ruch P2P
+Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Name:		kernel-net-ipp2p
 Epoch:		1
 Version:	0.5c
@@ -62,7 +62,7 @@ Ten pakiet zawiera modu³ j±dra Linuksa.
 
 %package -n kernel-smp-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
-Summary(pl):	IPP2P - rozszerzenie filtru pakietów identyfikuj±ce ruch P2P
+Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_smp}
@@ -100,7 +100,7 @@ Ten pakiet zawiera modu³ j±dra Linuksa SMP.
 
 %package -n iptables-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
-Summary(pl):	IPP2P - rozszerzenie filtru pakietów identyfikuj±ce ruch P2P
+Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Release:	%{_rel}
 Group:		Base/Kernel
 Requires:	iptables

@@ -30,7 +30,9 @@ Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 rm -rf build-done
 install -d build-done/{UP/SMP}
 ## iptables
-%{__make} libipt_ipp2p.o
+#%{__make} \
+#	IUSER=\"-I/usr/include/iptables\" \
+#	libipt_ipp2p
 ## kernel
 ln -sf %{_kernelsrcdir}/config-up .config
 rm -rf include

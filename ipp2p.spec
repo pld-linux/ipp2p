@@ -1,5 +1,6 @@
 #
 # Conditional build:
+%bcond_without	dist_kernel	# allow non-distribution kernel
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
@@ -19,7 +20,7 @@ Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_n
 URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 %{?with_userspace:BuildRequires:	iptables-devel}
 BuildRequires:	kernel-module-build
-Requires:	kernel-up
+%{?with_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -58,7 +59,7 @@ Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtru pakietów identyfikuj±ce ruch P2P
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-Requires:	kernel-smp
+%{?with_dist_kernel:%requires_releq_kernel_smp}
 Requires(post,postun):	/sbin/depmod
 
 %description -n kernel-smp-net-ipp2p
@@ -217,6 +218,7 @@ rm -rf $RPM_BUILD_ROOT
 %post -n iptables-ipp2p
 %postun -n iptables-ipp2p
 
+%if %{with dist_kernel}
 %files
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/*
@@ -224,6 +226,7 @@ rm -rf $RPM_BUILD_ROOT
 %files -n kernel-smp-net-ipp2p
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/*
+%endif
 
 %if %{with userspace}
 %files -n iptables-ipp2p

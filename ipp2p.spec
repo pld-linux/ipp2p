@@ -7,18 +7,19 @@
 %bcond_with	verbose		# verbose build (V=1)
 #
 %define		_orig_name	ipp2p
-%define		_rel 2
+%define		_rel 1
 %define		no_install_post_compress_modules	1
 #
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtru pakietów identyfikuj±ce ruch P2P
 Name:		kernel-net-ipp2p
-Version:	05b
+Epoch:		1
+Version:	0.5c
 Release:	%{_rel}@%{_kernel_ver_str}
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_name}.%{version}.tar.gz
-# Source0-md5:	5cf214c6132d88ac5f0c859e6b8ae792
+Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_name}-%{version}_2.6.tar.gz
+# Source0-md5:	d4768dfdd872aa000971744bc9dc464f
 URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 %{?with_userspace:BuildRequires:	iptables-devel}
 %if %{with kernel} && %{with dist_kernel}

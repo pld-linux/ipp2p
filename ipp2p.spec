@@ -143,7 +143,7 @@ j±dra IPP2P.
 # iptables module
 cat << EOF > Makefile
 CC		= %{__cc}
-CFLAGS		= %{rpmcflags} -fPIC -DMODULE -D__KERNEL__ %{?with_smp:-D__SMP__} -DNETFILTER_VERSION=\\"1.2.9\\"
+CFLAGS		= %{rpmcflags} -fPIC -DNETFILTER_VERSION=\\"1.2.9\\"
 INCPATH		= -I%{_includedir}/iptables
 LD		= %{__ld}
 .SUFFIXES:	.c .o .so
@@ -158,25 +158,26 @@ EOF
 
 %if %{with kernel}
 # kernel module
-cfg=%{_kernelsrcdir}/config-%{?with_smp:smp}%{!?with_smp:%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}}
-if [ ! -r "$cfg" ]; then
-    exit 1
-fi
-CWD=`pwd`
-%{__make} -C %{_kernelsrcdir} mrproper \
+for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}; do
+    if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
+	exit 1
+    fi
+    rm -rf include
+    install -d include/{linux,config}
+    %{__make} -C %{_kernelsrcdir} mrproper \
 	SUBDIRS=$PWD \
 	O=$PWD \
 	%{?with_verbose:V=1}
-ln -sf $cfg .config
-install -d include/{linux,config}
-ln -sf %{_kernelsrcdir}/include/linux/autoconf-%{?with_smp:smp}%{!?with_smp:up}.h include/linux/autoconf.h
-ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
-touch include/config/MARKER
-echo "obj-m := ipt_%{_orig_name}.o" > Makefile
-%{__make} -C %{_kernelsrcdir} modules \
+    ln -sf %{_kernelsrcdir}/config-$cfg .config
+    touch include/config/MARKER
+    echo "obj-m := ipt_%{_orig_name}.o" > Makefile
+    %{__make} -C %{_kernelsrcdir} modules \
 	SUBDIRS=$PWD \
 	O=$PWD \
 	%{?with_verbose:V=1}
+    mv ipt_%{_orig_name}.ko ipt_%{_orig_name}-$cfg.ko
+done
+
 %endif
 
 %install
@@ -188,16 +189,13 @@ install libipt_%{_orig_name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 %endif
 
 %if %{with kernel}
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}%{?with_smp:smp}/kernel/net/ipv4/netfilter
-
-if [ %(echo %{_kernel_ver_str} | cut -d. -f1-2) == "2.6" ]; then
-    ext="ko"
-else
-    ext="o"
-fi
-
-install ipt_%{_orig_name}.$ext \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}%{?with_smp:smp}/kernel/net/ipv4/netfilter
+install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}{,smp}/kernel/net/ipv4/netfilter
+install ipt_%{_orig_name}-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
+	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
+%if %{with smp} && %{with dist_kernel}
+install ipt_%{_orig_name}-smp.ko \
+	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}smp/kernel/net/ipv4/netfilter/ipt_%{_orig_name}.ko
+%endif
 %endif
 
 %clean
@@ -219,13 +217,11 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n iptables-ipp2p
 
 %if %{with kernel}
-%if !%{with smp}
 %files
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver_str}/kernel/net/ipv4/netfilter/*
-%endif
 
-%if %{with smp}
+%if %{with smp} && %{with dist_kernel}
 %files -n kernel-smp-net-ipp2p
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver_str}smp/kernel/net/ipv4/netfilter/*

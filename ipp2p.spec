@@ -1,8 +1,13 @@
+#
+# Conditional build:
+%bcond_without	smp		# don't build SMP module
+%bcond_without	dist_kernel	# allow non-distribution kernel
+%bcond_with	verbose		# verbose build (V=1)
+#
 %define		_orig_name	ipp2p
 %define		_rel 1
-
-%define		no_install_post_compress_modiles	1
-
+%define		no_install_post_compress_modules	1
+#
 Summary:	ipp2p
 Summary(pl):	ipp2p
 Name:		kernel-net-ipp2p
@@ -34,7 +39,7 @@ Requires(post,postun):	/sbin/depmod
 %description -n kernel-smp-net-ipp2p
 - -- empty --
 
-%description -l pl -n kernel-smp-net-ipp2p
+%description -n kernel-smp-net-ipp2p -l pl
 - -- pusty --
 
 %package -n iptables-ipp2p
@@ -47,7 +52,7 @@ Requires:	iptables
 %description -n iptables-ipp2p
 - -- empty --
 
-%description -l pl -n iptables-ipp2p
+%description -n iptables-ipp2p -l pl
 - -- pusty --
 
 %prep
@@ -56,59 +61,66 @@ Requires:	iptables
 #%patch
 
 %build
-rm -rf build-done
-install -d build-done/{UP,SMP}
-## iptables
-echo 'CC = gcc' >Makefile
-echo 'CFLAGS = -O2 -Wall -DNETFILTER_VERSION=\"1.2.9\"' >>Makefile
-echo 'libipt_ipp2p.so:   libipt_ipp2p.c ipt_ipp2p.h' >>Makefile
-echo '	    $(CC) -I/usr/include/iptables -fPIC $(CFLAGS)  -c libipt_ipp2p.c' >>Makefile
-echo '	    ld -shared -o libipt_ipp2p.so libipt_ipp2p.o' >>Makefile
+# iptables module
+cat << EOF > Makefile
+CC		= %{__cc}
+CFLAGS		= %{rpmcflags} -fPIC -DNETFILTER_VERSION=\\"1.2.9\\"
+INCPATH		= -I%{_includedir}/iptables
+LD		= %{__ld}
+.SUFFIXES:	.c .o .so
+.c.o:
+		\$(CC) \$(CFLAGS) \$(INCPATH) -c -o \$@ \$<
+.o.so:
+		\$(LD) -shared -o \$@ \$<
+all:		libipt_%{_orig_name}.so
+EOF
+%{__make}
 
-make
-
-## kernel
-ln -sf %{_kernelsrcdir}/config-up .config
-rm -rf include
+# kernel module
+cfg=%{_kernelsrcdir}/config-%{?with_smp:smp}%{!?with_smp:%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}}
+if [ ! -r "$cfg" ]; then
+    exit 1
+fi
+CWD=`pwd`
+%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD %{?with_verbose:V=1} mrproper
+ln -sf $cfg .config
 install -d include/{linux,config}
-ln -sf %{_kernelsrcdir}/include/linux/autoconf.h  include/linux/autoconf.h 
 ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
 touch include/config/MARKER
-echo 'obj-m := ipt_ipp2p.o' >Makefile
-%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 modules
-mv ipt_ipp2p.ko build-done/UP/
-
-%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 mrproper
-
-ln -sf %{_kernelsrcdir}/config-smp .config
-rm -rf include
-install -d include/{linux,config}
-ln -sf %{_kernelsrcdir}/include/linux/autoconf.h  include/linux/autoconf.h 
-ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
-touch include/config/MARKER
-echo 'obj-m := ipt_ipp2p.o' >Makefile
-%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD V=1 modules
-mv ipt_ipp2p.ko build-done/SMP/
+echo "obj-m := ipt_%{_orig_name}.o" > Makefile
+%{__make} -C %{_kernelsrcdir} SUBDIRS=$PWD O=$PWD %{?with_verbose:V=1} modules
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/drivers/net/
-install -d $RPM_BUILD_ROOT/usr/lib/iptables/
+install -d \
+    $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}%{?with_smp:smp}/kernel/drivers/net \
+    $RPM_BUILD_ROOT%{_libdir}/iptables
 
-cp build-done/UP/* $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/drivers/net/
-cp build-done/SMP/* $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/drivers/net/
-cp libipt_ipp2p.so $RPM_BUILD_ROOT/usr/lib/iptables/
+if [ %(echo %{_kernel_ver_str} | cut -d. -f1-2) == "2.6" ]; then
+    ext="ko"
+else
+    ext="o"
+fi
+
+install \
+    ipt_%{_orig_name}.$ext \
+    $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}%{?with_smp:smp}/kernel/drivers/net/
+
+install \
+    libipt_%{_orig_name}.so \
+    $RPM_BUILD_ROOT%{_libdir}/iptables/
+
 %post
-%depmod %{_kernel_ver}
+%depmod %{_kernel_ver_str}
 
 %postun
-%depmod %{_kernel_ver}
+%depmod %{_kernel_ver_str}
 
 %post -n kernel-smp-net-ipp2p
-%depmod %{_kernel_ver}
+%depmod %{_kernel_ver_str}
 
 %postun -n kernel-smp-net-ipp2p
-%depmod %{_kernel_ver}
+%depmod %{_kernel_ver_str}
 
 %post -n iptables-ipp2p
 %postun -n iptables-ipp2p
@@ -116,14 +128,18 @@ cp libipt_ipp2p.so $RPM_BUILD_ROOT/usr/lib/iptables/
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%if !%{with smp}
 %files
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/kernel/drivers/net/*
+/lib/modules/%{_kernel_ver_str}/kernel/drivers/net/*
+%endif
 
+%if %{with smp}
 %files -n kernel-smp-net-ipp2p
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}smp/kernel/drivers/net/*
+/lib/modules/%{_kernel_ver_str}smp/kernel/drivers/net/*
+%endif
 
 %files -n iptables-ipp2p
 %defattr(644,root,root,755)
-/usr/lib/iptables/*
+%{_prefix}/lib/iptables/*

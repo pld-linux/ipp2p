@@ -169,6 +169,7 @@ CWD=`pwd`
 	%{?with_verbose:V=1}
 ln -sf $cfg .config
 install -d include/{linux,config}
+ln -sf %{_kernelsrcdir}/include/linux/autoconf-%{?with_smp:smp}%{!?with_smp:up}.h include/linux/autoconf.h
 ln -sf %{_kernelsrcdir}/include/asm-%{_arch} include/asm
 touch include/config/MARKER
 echo "obj-m := ipt_%{_orig_name}.o" > Makefile

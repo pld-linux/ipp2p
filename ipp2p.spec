@@ -42,7 +42,7 @@ the bigger part of all P2P packets and limit the bandwidth rate.
 
 %description -l pl
 IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
-zwi±zanego z dzieleniem plików P2P. G³ownym celem tworzenia IPP2P jest
+zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
 udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
 ruchu w inteligentny sposób. Nie jest nim zablokowanie ca³ego ruchu
 P2P, ale umo¿liwienie ograniczenia tego ruchu do danej przepustowo¶ci.
@@ -78,7 +78,7 @@ This package contains Linux kernel module.
 
 %description -n kernel-net-ipp2p -l pl
 IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
-zwi±zanego z dzieleniem plików P2P. G³ownym celem tworzenia IPP2P jest
+zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
 udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
 ruchu w inteligentny sposób. Nie jest nim zablokowanie ca³ego ruchu
 P2P, ale umo¿liwienie ograniczenia tego ruchu do danej przepustowo¶ci.
@@ -116,7 +116,7 @@ This package contains Linux SMP kernel module.
 
 %description -n kernel-smp-net-ipp2p -l pl
 IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
-zwi±zanego z dzieleniem plików P2P. G³ownym celem tworzenia IPP2P jest
+zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
 udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
 ruchu w inteligentny sposób. Nie jest nim zablokowanie ca³ego ruchu
 P2P, ale umo¿liwienie ograniczenia tego ruchu do danej przepustowo¶ci.
@@ -154,7 +154,7 @@ module.
 
 %description -n iptables-ipp2p -l pl
 IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
-zwi±zanego z dzieleniem plików P2P. G³ownym celem tworzenia IPP2P jest
+zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
 udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
 ruchu w inteligentny sposób. Nie jest nim zablokowanie ca³ego ruchu
 P2P, ale umo¿liwienie ograniczenia tego ruchu do danej przepustowo¶ci.

@@ -8,8 +8,8 @@
 %define		_rel 1
 %define		no_install_post_compress_modules	1
 #
-Summary:	ipp2p
-Summary(pl):	ipp2p
+Summary:	IPP2P is a netfilter extension to identify P2P filesharing traffic.
+Summary(pl):	IPP2P jest rozszerzeniem filtru pakietów identyfikuj±cym ruch P2P.
 Name:		kernel-net-ipp2p
 Version:	05b
 Release:	%{_rel}@%{_kernel_ver_str}
@@ -24,20 +24,40 @@ URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-- -- empty --
+IPP2P is a netfilter extension to identify P2P filesharing traffic.
+The main goal for developing IPP2P was giving the adminstrator a
+dynamic tool to filter the traffic in an intelligent way. So it
+doesn't aim at prohibiting all P2P traffic but make it possible to
+shape this traffic to a given rate. For this purpose IPP2P searchs the
+payload of TCP packets for signaling patterns of P2P networks. As
+these patterns are not beeing present in all P2P packets we had to use
+some other netfilter extensions in order to get the whole IPP2P
+package working as already described. IPP2P works togeter with
+connection tracking and connection marking - in that way you can catch
+the bigger part of all P2P packets and limit the bandwidth rate.
 
 %description -l pl
 - -- pusty --
 
 %package -n kernel-smp-net-ipp2p
-Summary:	ipp2p
-Summary(pl):	ipp2p
+Summary:	IPP2P is a netfilter extension to identify P2P filesharing traffic.
+Summary(pl):	IPP2P jest rozszerzeniem filtru pakietów identyfikuj±cym ruch P2P.
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires(post,postun):	/sbin/depmod
 
 %description -n kernel-smp-net-ipp2p
-- -- empty --
+IPP2P is a netfilter extension to identify P2P filesharing traffic.
+The main goal for developing IPP2P was giving the adminstrator a
+dynamic tool to filter the traffic in an intelligent way. So it
+doesn't aim at prohibiting all P2P traffic but make it possible to
+shape this traffic to a given rate. For this purpose IPP2P searchs the
+payload of TCP packets for signaling patterns of P2P networks. As
+these patterns are not beeing present in all P2P packets we had to use
+some other netfilter extensions in order to get the whole IPP2P
+package working as already described. IPP2P works togeter with
+connection tracking and connection marking - in that way you can catch
+the bigger part of all P2P packets and limit the bandwidth rate.
 
 %description -n kernel-smp-net-ipp2p -l pl
 - -- pusty --
@@ -142,4 +162,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n iptables-ipp2p
 %defattr(644,root,root,755)
-%{_prefix}/lib/iptables/*
+%{_libdir}/iptables/*

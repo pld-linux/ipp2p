@@ -113,7 +113,7 @@ echo "obj-m := ipt_%{_orig_name}.o" > Makefile
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d \
-    $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}%{?with_smp:smp}/kernel/drivers/net \
+    $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}%{?with_smp:smp}/kernel/net/ipv4/netfilter \
     $RPM_BUILD_ROOT%{_libdir}/iptables
 
 if [ %(echo %{_kernel_ver_str} | cut -d. -f1-2) == "2.6" ]; then
@@ -124,7 +124,7 @@ fi
 
 install \
     ipt_%{_orig_name}.$ext \
-    $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}%{?with_smp:smp}/kernel/drivers/net/
+    $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver_str}%{?with_smp:smp}/kernel/net/ipv4/netfilter/
 
 install \
     libipt_%{_orig_name}.so \
@@ -151,13 +151,13 @@ rm -rf $RPM_BUILD_ROOT
 %if !%{with smp}
 %files
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver_str}/kernel/drivers/net/*
+/lib/modules/%{_kernel_ver_str}/kernel/net/ipv4/netfilter/*
 %endif
 
 %if %{with smp}
 %files -n kernel-smp-net-ipp2p
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver_str}smp/kernel/drivers/net/*
+/lib/modules/%{_kernel_ver_str}smp/kernel/net/ipv4/netfilter/*
 %endif
 
 %files -n iptables-ipp2p

@@ -7,25 +7,25 @@
 %bcond_with	verbose		# verbose build (V=1)
 #
 %define		_orig_name	ipp2p
-%define		_rel	2
-%define		no_install_post_compress_modules	1
+%define		_rel	1
 #
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Name:		kernel-net-ipp2p
 Epoch:		1
-Version:	0.5c
+Version:	0.6
 Release:	%{_rel}@%{_kernel_ver_str}
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_name}-%{version}_2.6.tar.gz
-# Source0-md5:	d4768dfdd872aa000971744bc9dc464f
+Source0:	http://rnvs.informatik.uni-leipzig.de/%{_orig_name}/downloads/%{_orig_name}.06.tar.gz
+# Source0-md5:	9ac3ab4f48755500dbb0020292088efe
 URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 %{?with_userspace:BuildRequires:	iptables-devel}
 %if %{with kernel} && %{with dist_kernel}
 BuildRequires:	kernel-module-build
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.153
+BuildRequires:	sed >= 4.0
 %{?with_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -139,23 +139,12 @@ j±dra IPP2P.
 
 %prep
 %setup -q -n %{_orig_name}
+sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 
 %build
 %if %{with userspace}
-# iptables module
-cat << EOF > Makefile
-CC		= %{__cc}
-CFLAGS		= %{rpmcflags} -fPIC -DNETFILTER_VERSION=\\"1.2.11\\"
-INCPATH		= -I%{_includedir}
-LD		= %{__ld}
-.SUFFIXES:	.c .o .so
-.c.o:
-		\$(CC) \$(CFLAGS) \$(INCPATH) -c -o \$@ \$<
-.o.so:
-		\$(LD) -shared -o \$@ \$<
-all:		libipt_%{_orig_name}.so
-EOF
-%{__make}
+%{__make} libipt_ipp2p.so \
+    CFLAGS="%{rpmcflags}"
 %endif
 
 %if %{with kernel}
@@ -170,9 +159,11 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
     ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h include/linux/autoconf.h
     ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
     touch include/config/MARKER
-    echo "obj-m := ipt_%{_orig_name}.o" > Makefile
-    %{__make} -C %{_kernelsrcdir} clean modules \
+    %{__make} -C %{_kernelsrcdir} clean \
 	RCS_FIND_IGNORE="-name '*.ko' -o" \
+	M=$PWD O=$PWD \
+	%{?with_verbose:V=1}
+    %{__make} -C %{_kernelsrcdir} modules \
 	M=$PWD O=$PWD \
 	%{?with_verbose:V=1}
     mv ipt_%{_orig_name}{,-$cfg}.ko

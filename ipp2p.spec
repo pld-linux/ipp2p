@@ -6,18 +6,17 @@
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
-#
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Name:		ipp2p
-Version:	0.6
-%define	_rel	5
+Version:	0.7
+%define	_rel	1
 Release:	%{_rel}
 Epoch:		1
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://rnvs.informatik.uni-leipzig.de/ipp2p/downloads/%{name}.06.tar.gz
-# Source0-md5:	9ac3ab4f48755500dbb0020292088efe
+Source0:	http://rnvs.informatik.uni-leipzig.de/ipp2p/downloads/%{name}-%{version}.tar.gz
+# Source0-md5:	ba11c907dce9841b7d659eb0e962a5ff
 URL:		http://rnvs.informatik.uni-leipzig.de/ipp2p/
 %{?with_userspace:BuildRequires:	iptables-devel}
 %if %{with kernel} && %{with dist_kernel}
@@ -169,7 +168,7 @@ Ten pakiet zawiera modu³ iptables potrzebny do sterowania modu³em
 j±dra IPP2P.
 
 %prep
-%setup -q -n %{name}
+%setup -q
 sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 
 %build

@@ -157,7 +157,7 @@ EOF
 %endif
 
 %if %{with kernel}
-# kernel module
+# kernel module(s)
 for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}; do
     if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
 	exit 1
@@ -169,6 +169,7 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
 	O=$PWD \
 	%{?with_verbose:V=1}
     ln -sf %{_kernelsrcdir}/config-$cfg .config
+    %{?with_dist_kernel:ln -sf %{_kernelsrcdir}/include/linux/autoconf-${cfg}.h include/linux/autoconf.h}
     touch include/config/MARKER
     echo "obj-m := ipt_%{_orig_name}.o" > Makefile
     %{__make} -C %{_kernelsrcdir} modules \
@@ -177,7 +178,6 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
 	%{?with_verbose:V=1}
     mv ipt_%{_orig_name}.ko ipt_%{_orig_name}-$cfg.ko
 done
-
 %endif
 
 %install

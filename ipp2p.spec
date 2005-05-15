@@ -175,7 +175,7 @@ sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 %build
 %if %{with userspace}
 IPTABLES_VERSION=`rpm -q --queryformat '%{V}' iptables`
-gcc %{rpmcflags} -DIPTABLES_VERSION=\"$IPTABLES_VERSION\" -fPIC -c libipt_ipp2p.c
+%{__cc} %{rpmcflags} -DIPTABLES_VERSION=\"$IPTABLES_VERSION\" -fPIC -c libipt_ipp2p.c
 ld %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 

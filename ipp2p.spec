@@ -16,8 +16,8 @@ Epoch:		1
 License:	GPL
 Group:		Base/Kernel
 Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
+# Source0-md5:	82bb0eb1d5a9defde6b2530c54bc2296
 #Source0:	http://139.18.1.242/snapshots/%{name}-%{version}.tar.gz
-#Source0-md5:	
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel}
 %if %{with kernel} && %{with dist_kernel}

@@ -9,15 +9,15 @@
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Name:		ipp2p
-Version:	0.7.4
+Version:	0.8.0_rc3
 %define	_rel	2
 Release:	%{_rel}
 Epoch:		1
 License:	GPL
 Group:		Base/Kernel
-#Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
-Source0:	http://139.18.1.242/snapshots/%{name}-%{version}.tar.gz
-# Source0-md5:	a9ab4262de0f503cb8905d180a8bb75b
+Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
+#Source0:	http://139.18.1.242/snapshots/%{name}-%{version}.tar.gz
+#Source0-md5:	
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel}
 %if %{with kernel} && %{with dist_kernel}

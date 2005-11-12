@@ -10,7 +10,7 @@ Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Name:		ipp2p
 Version:	0.8.0
-%define	_rel	1
+%define	_rel	2
 Release:	%{_rel}
 Epoch:		1
 License:	GPL
@@ -19,12 +19,22 @@ Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	8738d6ad5600ac5577bd599e6d279bef
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel}
-%if %{with kernel} && %{with dist_kernel}
+%if %{with kernel}
+%ifarch sparc
+BuildRequires:	crosssparc64-gcc
+%endif
+%if %{with dist_kernel}
 BuildRequires:	kernel-module-build >= 2.6.7
+%endif
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.153
 BuildRequires:	sed >= 4.0
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%ifarch sparc
+%define         _target_base_arch       sparc64
+%define         _target_base_cpu             sparc64
+%endif
 
 %description
 IPP2P is a netfilter extension to identify P2P filesharing traffic.
@@ -188,7 +198,17 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
     install -d include/{linux,config}
     ln -sf %{_kernelsrcdir}/config-$cfg .config
     ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h include/linux/autoconf.h
-    ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
+%ifarch ppc
+        if [ -d "%{_kernelsrcdir}/include/asm-powerpc" ]; then
+                install -d include/asm
+                cp -a %{_kernelsrcdir}/include/asm-%{_target_base_arch}/* include/asm
+                cp -a %{_kernelsrcdir}/include/asm-powerpc/* include/asm
+        else
+                ln -sf %{_kernelsrcdir}/include/asm-powerpc include/asm
+        fi
+%else
+        ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
+%endif
     ln -sf %{_kernelsrcdir}/Module.symvers-$cfg Module.symvers
     touch include/config/MARKER
     %{__make} -C %{_kernelsrcdir} clean \
@@ -196,6 +216,11 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
 	M=$PWD O=$PWD \
 	%{?with_verbose:V=1}
     %{__make} -C %{_kernelsrcdir} modules \
+%if "%{_target_base_arch}" != "%{_arch}"
+	ARCH=%{_target_base_arch} \
+	CROSS_COMPILE=%{_target_base_cpu}-pld-linux- \
+%endif
+	HOSTCC="%{__cc}" \
 	M=$PWD O=$PWD \
 	%{?with_verbose:V=1}
     mv ipt_%{name}{,-$cfg}.ko

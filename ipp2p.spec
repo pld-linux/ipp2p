@@ -185,6 +185,7 @@ sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 %if %{with userspace}
 IPTABLES_VERSION=`rpm -q --queryformat '%{V}' iptables`
 %{__cc} %{rpmcflags} -DIPTABLES_VERSION=\"$IPTABLES_VERSION\" -fPIC -c libipt_ipp2p.c
+#vim: "
 ld %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 
@@ -199,15 +200,15 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
     ln -sf %{_kernelsrcdir}/config-$cfg .config
     ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h include/linux/autoconf.h
 %ifarch ppc
-        if [ -d "%{_kernelsrcdir}/include/asm-powerpc" ]; then
-                install -d include/asm
-                cp -a %{_kernelsrcdir}/include/asm-%{_target_base_arch}/* include/asm
-                cp -a %{_kernelsrcdir}/include/asm-powerpc/* include/asm
-        else
-                ln -sf %{_kernelsrcdir}/include/asm-powerpc include/asm
-        fi
+	if [ -d "%{_kernelsrcdir}/include/asm-powerpc" ]; then
+		install -d include/asm
+		cp -a %{_kernelsrcdir}/include/asm-%{_target_base_arch}/* include/asm
+		cp -a %{_kernelsrcdir}/include/asm-powerpc/* include/asm
+	else
+		ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
+	fi
 %else
-        ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
+	ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
 %endif
     ln -sf %{_kernelsrcdir}/Module.symvers-$cfg Module.symvers
     touch include/config/MARKER

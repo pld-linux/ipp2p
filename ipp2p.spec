@@ -6,11 +6,13 @@
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
+%define	iptables_ver	1.3.3
+#
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Name:		ipp2p
 Version:	0.8.1_rc1
-%define	_rel	1
+%define	_rel	2
 Release:	%{_rel}
 Epoch:		1
 License:	GPL
@@ -18,7 +20,7 @@ Group:		Base/Kernel
 Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	eebaf70b9c820f2537df4bac2466dd91
 URL:		http://www.ipp2p.org/
-%{?with_userspace:BuildRequires:	iptables-devel}
+%{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
 %if %{with kernel}
 %ifarch sparc
 BuildRequires:	crosssparc64-gcc
@@ -183,7 +185,7 @@ sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 
 %build
 %if %{with userspace}
-IPTABLES_VERSION=`rpm -q --queryformat '%{V}' iptables`
+IPTABLES_VERSION="%{iptables_ver}"
 %{__cc} %{rpmcflags} -DIPTABLES_VERSION=\"$IPTABLES_VERSION\" -fPIC -c libipt_ipp2p.c
 #vim: "
 ld %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
@@ -195,35 +197,20 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
     if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
 	exit 1
     fi
-    rm -rf include
-    install -d include/{linux,config}
-    ln -sf %{_kernelsrcdir}/config-$cfg .config
-    ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h include/linux/autoconf.h
-%ifarch ppc
-	if [ -d "%{_kernelsrcdir}/include/asm-powerpc" ]; then
-		install -d include/asm
-		cp -a %{_kernelsrcdir}/include/asm-%{_target_base_arch}/* include/asm
-		cp -a %{_kernelsrcdir}/include/asm-powerpc/* include/asm
-	else
-		ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
-	fi
-%else
-	ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
-%endif
-    ln -sf %{_kernelsrcdir}/Module.symvers-$cfg Module.symvers
-    touch include/config/MARKER
+    install -d o/include/linux
+    ln -sf %{_kernelsrcdir}/config-$cfg o/.config
+    ln -sf %{_kernelsrcdir}/Module.symvers-$cfg o/Module.symvers
+    ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h o/include/linux/autoconf.h
+    %{__make} -C %{_kernelsrcdir} O=$PWD/o prepare scripts
+
     %{__make} -C %{_kernelsrcdir} clean \
-	RCS_FIND_IGNORE="-name '*.ko' -o" \
-	M=$PWD O=$PWD \
-	%{?with_verbose:V=1}
+	    RCS_FIND_IGNORE="-name '*.ko' -o" \
+	    M=$PWD O=$PWD/o \
+	    %{?with_verbose:V=1}
     %{__make} -C %{_kernelsrcdir} modules \
-%if "%{_target_base_arch}" != "%{_arch}"
-	ARCH=%{_target_base_arch} \
-	CROSS_COMPILE=%{_target_base_cpu}-pld-linux- \
-%endif
-	HOSTCC="%{__cc}" \
-	M=$PWD O=$PWD \
-	%{?with_verbose:V=1}
+	    CC="%{__cc}" CPP="%{__cpp}" \
+	    M=$PWD O=$PWD/o \
+	    %{?with_verbose:V=1}
     mv ipt_%{name}{,-$cfg}.ko
 done
 %endif

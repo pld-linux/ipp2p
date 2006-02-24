@@ -22,9 +22,6 @@ Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
 %if %{with kernel}
-%ifarch sparc
-BuildRequires:	crosssparc64-gcc
-%endif
 %if %{with dist_kernel}
 BuildRequires:	kernel-module-build >= 2.6.7
 %endif
@@ -34,8 +31,7 @@ BuildRequires:	sed >= 4.0
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %ifarch sparc
-%define		_target_base_arch	sparc64
-%define		_target_base_cpu	sparc64
+%undefine	with_smp
 %endif
 
 %description

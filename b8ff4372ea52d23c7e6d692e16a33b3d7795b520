@@ -1,0 +1,1 @@
+- s/%{_kernel_ver_str}/%{_kernel_ver}/

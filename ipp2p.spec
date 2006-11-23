@@ -26,7 +26,7 @@ URL:		http://www.ipp2p.org/
 BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7
 %endif
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.308
+BuildRequires:	rpmbuild(macros) >= 1.330
 BuildRequires:	sed >= 4.0
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -184,31 +184,12 @@ sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 IPTABLES_VERSION="%{iptables_ver}"
 %{__cc} %{rpmcflags} -DIPTABLES_VERSION=\"$IPTABLES_VERSION\" -fPIC -c libipt_ipp2p.c
 #vim: "
-ld %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
+%{__cc} %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 
 %if %{with kernel}
 # kernel module(s)
-for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}; do
-	if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
-	exit 1
-	fi
-	install -d o/include/linux
-	ln -sf %{_kernelsrcdir}/config-$cfg o/.config
-	ln -sf %{_kernelsrcdir}/Module.symvers-$cfg o/Module.symvers
-	ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h o/include/linux/autoconf.h
-	%{__make} -j1 -C %{_kernelsrcdir} O=$PWD/o prepare scripts
-
-	%{__make} -C %{_kernelsrcdir} clean \
-		RCS_FIND_IGNORE="-name '*.ko' -o" \
-		M=$PWD O=$PWD/o \
-		%{?with_verbose:V=1}
-	%{__make} -C %{_kernelsrcdir} modules \
-		CC="%{__cc}" CPP="%{__cpp}" \
-		M=$PWD O=$PWD/o \
-		%{?with_verbose:V=1}
-	mv ipt_%{name}{,-$cfg}.ko
-done
+%build_kernel_modules -m ipt_%{name}
 %endif
 
 %install
@@ -220,13 +201,7 @@ install libipt_%{name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 %endif
 
 %if %{with kernel}
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/kernel/net/ipv4/netfilter
-install ipt_%{name}-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{name}.ko
-%if %{with smp} && %{with dist_kernel}
-install ipt_%{name}-smp.ko \
-	$RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{name}.ko
-%endif
+%install_kernel_modules -m ipt_%{name} -d kernel/net/ipv4/netfilter
 %endif
 
 %clean
@@ -247,12 +222,12 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with kernel}
 %files -n kernel%{_alt_kernel}-net-ipp2p
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/*
+/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{name}.ko*
 
 %if %{with smp} && %{with dist_kernel}
 %files -n kernel%{_alt_kernel}-smp-net-ipp2p
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/*
+/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{name}.ko*
 %endif
 %endif
 

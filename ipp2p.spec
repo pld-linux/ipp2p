@@ -26,7 +26,7 @@ URL:		http://www.ipp2p.org/
 BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7
 %endif
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.153
+BuildRequires:	rpmbuild(macros) >= 1.308
 BuildRequires:	sed >= 4.0
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 

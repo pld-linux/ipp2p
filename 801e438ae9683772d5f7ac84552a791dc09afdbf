@@ -1,0 +1,2 @@
+- fixed %build, %install, %files,
+- %description and %summary not updated.

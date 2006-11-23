@@ -8,7 +8,7 @@
 #
 %define	iptables_ver	1.3.3
 #
-%define	_rel	4
+%define	_rel	5
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Name:		ipp2p
@@ -23,7 +23,7 @@ URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
 %if %{with kernel}
 %if %{with dist_kernel}
-BuildRequires:	kernel-module-build >= 3:2.6.7
+BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7
 %endif
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.153
@@ -60,7 +60,7 @@ dzia³a³o zgodnie z opisem. IPP2P wspó³pracuje ze ¶ledzeniem oraz
 znakowaniem po³±czeñ - w ten sposób mo¿na wychwyciæ wiêksz± czê¶æ
 pakietów P2P i ograniczyæ wykorzystanie ³±cza przez nie.
 
-%package -n kernel-net-ipp2p
+%package -n kernel%{_alt_kernel}-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Release:	%{_rel}@%{_kernel_ver_str}
@@ -68,7 +68,7 @@ Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_up}
 Requires(post,postun):	/sbin/depmod
 
-%description -n kernel-net-ipp2p
+%description -n kernel%{_alt_kernel}-net-ipp2p
 IPP2P is a netfilter extension to identify P2P filesharing traffic.
 The main goal for developing IPP2P was giving the adminstrator a
 dynamic tool to filter the traffic in an intelligent way. So it
@@ -83,7 +83,7 @@ the bigger part of all P2P packets and limit the bandwidth rate.
 
 This package contains Linux kernel module.
 
-%description -n kernel-net-ipp2p -l pl
+%description -n kernel%{_alt_kernel}-net-ipp2p -l pl
 IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
 zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
 udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
@@ -98,7 +98,7 @@ pakietów P2P i ograniczyæ wykorzystanie ³±cza przez nie.
 
 Ten pakiet zawiera modu³ j±dra Linuksa.
 
-%package -n kernel-smp-net-ipp2p
+%package -n kernel%{_alt_kernel}-smp-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Release:	%{_rel}@%{_kernel_ver_str}
@@ -106,7 +106,7 @@ Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_smp}
 Requires(post,postun):	/sbin/depmod
 
-%description -n kernel-smp-net-ipp2p
+%description -n kernel%{_alt_kernel}-smp-net-ipp2p
 IPP2P is a netfilter extension to identify P2P filesharing traffic.
 The main goal for developing IPP2P was giving the adminstrator a
 dynamic tool to filter the traffic in an intelligent way. So it
@@ -121,7 +121,7 @@ the bigger part of all P2P packets and limit the bandwidth rate.
 
 This package contains Linux SMP kernel module.
 
-%description -n kernel-smp-net-ipp2p -l pl
+%description -n kernel%{_alt_kernel}-smp-net-ipp2p -l pl
 IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
 zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
 udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
@@ -232,25 +232,25 @@ install ipt_%{name}-smp.ko \
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -n kernel-net-ipp2p
+%post -n kernel%{_alt_kernel}-net-ipp2p
 %depmod %{_kernel_ver}
 
-%postun -n kernel-net-ipp2p
+%postun -n kernel%{_alt_kernel}-net-ipp2p
 %depmod %{_kernel_ver}
 
-%post -n kernel-smp-net-ipp2p
+%post -n kernel%{_alt_kernel}-smp-net-ipp2p
 %depmod %{_kernel_ver}smp
 
-%postun -n kernel-smp-net-ipp2p
+%postun -n kernel%{_alt_kernel}-smp-net-ipp2p
 %depmod %{_kernel_ver}smp
 
 %if %{with kernel}
-%files -n kernel-net-ipp2p
+%files -n kernel%{_alt_kernel}-net-ipp2p
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/*
 
 %if %{with smp} && %{with dist_kernel}
-%files -n kernel-smp-net-ipp2p
+%files -n kernel%{_alt_kernel}-smp-net-ipp2p
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/*
 %endif

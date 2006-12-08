@@ -5,10 +5,15 @@
 %bcond_without	smp		# don't build SMP module
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
+%bcond_with	grsec_kernel	# build for kernel-grsecurity
+#
+%if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
+%define	alt_kernel	grsecurity
+%endif
 #
 %define	iptables_ver	1.3.3
 #
-%define	_rel	1
+%define	_rel	2
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Name:		ipp2p
@@ -184,7 +189,7 @@ sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 IPTABLES_VERSION="%{iptables_ver}"
 %{__cc} %{rpmcflags} -DIPTABLES_VERSION=\"$IPTABLES_VERSION\" -fPIC -c libipt_ipp2p.c
 #vim: "
-%{__cc} %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
+ld %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 
 %if %{with kernel}

@@ -15,7 +15,7 @@
 #
 %define	_rel	3
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
-Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
+Summary(pl.UTF-8):   IPP2P - rozszerzenie filtra pakietÃ³w identyfikujÄ…ce ruch P2P
 Name:		ipp2p
 Version:	0.8.2
 Release:	%{_rel}
@@ -52,22 +52,22 @@ package working as already described. IPP2P works together with
 connection tracking and connection marking - in that way you can catch
 the bigger part of all P2P packets and limit the bandwidth rate.
 
-%description -l pl
-IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
-zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
-udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
-ruchu w inteligentny sposób. Nie jest nim zablokowanie ca³ego ruchu
-P2P, ale umo¿liwienie ograniczenia tego ruchu do danej przepustowo¶ci.
-W tym celu IPP2P przeszukuje zawarto¶æ (payload) pakietów TCP pod
-k±tem wzorców sygnalizuj±cych sieci P2P. Je¶li tych wzorców nie ma w
-pakietach, musz± byæ u¿yte inne rozszerzenia netfiltra, aby IPP2P
-dzia³a³o zgodnie z opisem. IPP2P wspó³pracuje ze ¶ledzeniem oraz
-znakowaniem po³±czeñ - w ten sposób mo¿na wychwyciæ wiêksz± czê¶æ
-pakietów P2P i ograniczyæ wykorzystanie ³±cza przez nie.
+%description -l pl.UTF-8
+IPP2P to rozszerzenie netfiltra sÅ‚uÅ¼Ä…ce do identyfikowania ruchu
+zwiÄ…zanego z dzieleniem plikÃ³w P2P. GÅ‚Ã³wnym celem tworzenia IPP2P jest
+udostÄ™pnienie administratorowi dynamicznego narzÄ™dzia do filtrowania
+ruchu w inteligentny sposÃ³b. Nie jest nim zablokowanie caÅ‚ego ruchu
+P2P, ale umoÅ¼liwienie ograniczenia tego ruchu do danej przepustowoÅ›ci.
+W tym celu IPP2P przeszukuje zawartoÅ›Ä‡ (payload) pakietÃ³w TCP pod
+kÄ…tem wzorcÃ³w sygnalizujÄ…cych sieci P2P. JeÅ›li tych wzorcÃ³w nie ma w
+pakietach, muszÄ… byÄ‡ uÅ¼yte inne rozszerzenia netfiltra, aby IPP2P
+dziaÅ‚aÅ‚o zgodnie z opisem. IPP2P wspÃ³Å‚pracuje ze Å›ledzeniem oraz
+znakowaniem poÅ‚Ä…czeÅ„ - w ten sposÃ³b moÅ¼na wychwyciÄ‡ wiÄ™kszÄ… czÄ™Å›Ä‡
+pakietÃ³w P2P i ograniczyÄ‡ wykorzystanie Å‚Ä…cza przez nie.
 
 %package -n kernel%{_alt_kernel}-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
-Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
+Summary(pl.UTF-8):   IPP2P - rozszerzenie filtra pakietÃ³w identyfikujÄ…ce ruch P2P
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_up}
@@ -88,24 +88,24 @@ the bigger part of all P2P packets and limit the bandwidth rate.
 
 This package contains Linux kernel module.
 
-%description -n kernel%{_alt_kernel}-net-ipp2p -l pl
-IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
-zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
-udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
-ruchu w inteligentny sposób. Nie jest nim zablokowanie ca³ego ruchu
-P2P, ale umo¿liwienie ograniczenia tego ruchu do danej przepustowo¶ci.
-W tym celu IPP2P przeszukuje zawarto¶æ (payload) pakietów TCP pod
-k±tem wzorców sygnalizuj±cych sieci P2P. Je¶li tych wzorców nie ma w
-pakietach, musz± byæ u¿yte inne rozszerzenia netfiltra, aby IPP2P
-dzia³a³o zgodnie z opisem. IPP2P wspó³pracuje ze ¶ledzeniem oraz
-znakowaniem po³±czeñ - w ten sposób mo¿na wychwyciæ wiêksz± czê¶æ
-pakietów P2P i ograniczyæ wykorzystanie ³±cza przez nie.
+%description -n kernel%{_alt_kernel}-net-ipp2p -l pl.UTF-8
+IPP2P to rozszerzenie netfiltra sÅ‚uÅ¼Ä…ce do identyfikowania ruchu
+zwiÄ…zanego z dzieleniem plikÃ³w P2P. GÅ‚Ã³wnym celem tworzenia IPP2P jest
+udostÄ™pnienie administratorowi dynamicznego narzÄ™dzia do filtrowania
+ruchu w inteligentny sposÃ³b. Nie jest nim zablokowanie caÅ‚ego ruchu
+P2P, ale umoÅ¼liwienie ograniczenia tego ruchu do danej przepustowoÅ›ci.
+W tym celu IPP2P przeszukuje zawartoÅ›Ä‡ (payload) pakietÃ³w TCP pod
+kÄ…tem wzorcÃ³w sygnalizujÄ…cych sieci P2P. JeÅ›li tych wzorcÃ³w nie ma w
+pakietach, muszÄ… byÄ‡ uÅ¼yte inne rozszerzenia netfiltra, aby IPP2P
+dziaÅ‚aÅ‚o zgodnie z opisem. IPP2P wspÃ³Å‚pracuje ze Å›ledzeniem oraz
+znakowaniem poÅ‚Ä…czeÅ„ - w ten sposÃ³b moÅ¼na wychwyciÄ‡ wiÄ™kszÄ… czÄ™Å›Ä‡
+pakietÃ³w P2P i ograniczyÄ‡ wykorzystanie Å‚Ä…cza przez nie.
 
-Ten pakiet zawiera modu³ j±dra Linuksa.
+Ten pakiet zawiera moduÅ‚ jÄ…dra Linuksa.
 
 %package -n kernel%{_alt_kernel}-smp-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
-Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
+Summary(pl.UTF-8):   IPP2P - rozszerzenie filtra pakietÃ³w identyfikujÄ…ce ruch P2P
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel_smp}
@@ -126,24 +126,24 @@ the bigger part of all P2P packets and limit the bandwidth rate.
 
 This package contains Linux SMP kernel module.
 
-%description -n kernel%{_alt_kernel}-smp-net-ipp2p -l pl
-IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
-zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
-udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
-ruchu w inteligentny sposób. Nie jest nim zablokowanie ca³ego ruchu
-P2P, ale umo¿liwienie ograniczenia tego ruchu do danej przepustowo¶ci.
-W tym celu IPP2P przeszukuje zawarto¶æ (payload) pakietów TCP pod
-k±tem wzorców sygnalizuj±cych sieci P2P. Je¶li tych wzorców nie ma w
-pakietach, musz± byæ u¿yte inne rozszerzenia netfiltra, aby IPP2P
-dzia³a³o zgodnie z opisem. IPP2P wspó³pracuje ze ¶ledzeniem oraz
-znakowaniem po³±czeñ - w ten sposób mo¿na wychwyciæ wiêksz± czê¶æ
-pakietów P2P i ograniczyæ wykorzystanie ³±cza przez nie.
+%description -n kernel%{_alt_kernel}-smp-net-ipp2p -l pl.UTF-8
+IPP2P to rozszerzenie netfiltra sÅ‚uÅ¼Ä…ce do identyfikowania ruchu
+zwiÄ…zanego z dzieleniem plikÃ³w P2P. GÅ‚Ã³wnym celem tworzenia IPP2P jest
+udostÄ™pnienie administratorowi dynamicznego narzÄ™dzia do filtrowania
+ruchu w inteligentny sposÃ³b. Nie jest nim zablokowanie caÅ‚ego ruchu
+P2P, ale umoÅ¼liwienie ograniczenia tego ruchu do danej przepustowoÅ›ci.
+W tym celu IPP2P przeszukuje zawartoÅ›Ä‡ (payload) pakietÃ³w TCP pod
+kÄ…tem wzorcÃ³w sygnalizujÄ…cych sieci P2P. JeÅ›li tych wzorcÃ³w nie ma w
+pakietach, muszÄ… byÄ‡ uÅ¼yte inne rozszerzenia netfiltra, aby IPP2P
+dziaÅ‚aÅ‚o zgodnie z opisem. IPP2P wspÃ³Å‚pracuje ze Å›ledzeniem oraz
+znakowaniem poÅ‚Ä…czeÅ„ - w ten sposÃ³b moÅ¼na wychwyciÄ‡ wiÄ™kszÄ… czÄ™Å›Ä‡
+pakietÃ³w P2P i ograniczyÄ‡ wykorzystanie Å‚Ä…cza przez nie.
 
-Ten pakiet zawiera modu³ j±dra Linuksa SMP.
+Ten pakiet zawiera moduÅ‚ jÄ…dra Linuksa SMP.
 
 %package -n iptables-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
-Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
+Summary(pl.UTF-8):   IPP2P - rozszerzenie filtra pakietÃ³w identyfikujÄ…ce ruch P2P
 Release:	%{_rel}
 Group:		Base/Kernel
 Requires:	iptables
@@ -164,21 +164,21 @@ the bigger part of all P2P packets and limit the bandwidth rate.
 This package contains iptables module needed to control IPP2P kernel
 module.
 
-%description -n iptables-ipp2p -l pl
-IPP2P to rozszerzenie netfiltra s³u¿±ce do identyfikowania ruchu
-zwi±zanego z dzieleniem plików P2P. G³ównym celem tworzenia IPP2P jest
-udostêpnienie administratorowi dynamicznego narzêdzia do filtrowania
-ruchu w inteligentny sposób. Nie jest nim zablokowanie ca³ego ruchu
-P2P, ale umo¿liwienie ograniczenia tego ruchu do danej przepustowo¶ci.
-W tym celu IPP2P przeszukuje zawarto¶æ (payload) pakietów TCP pod
-k±tem wzorców sygnalizuj±cych sieci P2P. Je¶li tych wzorców nie ma w
-pakietach, musz± byæ u¿yte inne rozszerzenia netfiltra, aby IPP2P
-dzia³a³o zgodnie z opisem. IPP2P wspó³pracuje ze ¶ledzeniem oraz
-znakowaniem po³±czeñ - w ten sposób mo¿na wychwyciæ wiêksz± czê¶æ
-pakietów P2P i ograniczyæ wykorzystanie ³±cza przez nie.
+%description -n iptables-ipp2p -l pl.UTF-8
+IPP2P to rozszerzenie netfiltra sÅ‚uÅ¼Ä…ce do identyfikowania ruchu
+zwiÄ…zanego z dzieleniem plikÃ³w P2P. GÅ‚Ã³wnym celem tworzenia IPP2P jest
+udostÄ™pnienie administratorowi dynamicznego narzÄ™dzia do filtrowania
+ruchu w inteligentny sposÃ³b. Nie jest nim zablokowanie caÅ‚ego ruchu
+P2P, ale umoÅ¼liwienie ograniczenia tego ruchu do danej przepustowoÅ›ci.
+W tym celu IPP2P przeszukuje zawartoÅ›Ä‡ (payload) pakietÃ³w TCP pod
+kÄ…tem wzorcÃ³w sygnalizujÄ…cych sieci P2P. JeÅ›li tych wzorcÃ³w nie ma w
+pakietach, muszÄ… byÄ‡ uÅ¼yte inne rozszerzenia netfiltra, aby IPP2P
+dziaÅ‚aÅ‚o zgodnie z opisem. IPP2P wspÃ³Å‚pracuje ze Å›ledzeniem oraz
+znakowaniem poÅ‚Ä…czeÅ„ - w ten sposÃ³b moÅ¼na wychwyciÄ‡ wiÄ™kszÄ… czÄ™Å›Ä‡
+pakietÃ³w P2P i ograniczyÄ‡ wykorzystanie Å‚Ä…cza przez nie.
 
-Ten pakiet zawiera modu³ iptables potrzebny do sterowania modu³em
-j±dra IPP2P.
+Ten pakiet zawiera moduÅ‚ iptables potrzebny do sterowania moduÅ‚em
+jÄ…dra IPP2P.
 
 %prep
 %setup -q

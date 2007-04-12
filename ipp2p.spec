@@ -28,7 +28,7 @@ URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
 %if %{with kernel}
 %if %{with dist_kernel}
-BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7
+BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.20.2
 %endif
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.379

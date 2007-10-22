@@ -7,21 +7,22 @@
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 %bcond_with	grsec_kernel	# build for kernel-grsecurity
-#
+
 %ifarch sparc
 %undefine	with_smp
 %endif
-#
+
 %if %{without kernel}
 %undefine	with_dist_kernel
 %endif
-#
 %if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
 %define	alt_kernel	grsecurity
 %endif
-#
+%if "%{_alt_kernel}" != "%{nil}"
+%undefine	with_userspace
+%endif
+
 %define	iptables_ver	1.3.3
-#
 %define		_rel	55
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P

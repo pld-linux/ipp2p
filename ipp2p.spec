@@ -8,6 +8,14 @@
 %bcond_with	verbose		# verbose build (V=1)
 %bcond_with	grsec_kernel	# build for kernel-grsecurity
 #
+%ifarch sparc
+%undefine	with_smp
+%endif
+#
+%if %{without kernel}
+%undefine	with_dist_kernel
+%endif
+#
 %if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
 %define	alt_kernel	grsecurity
 %endif
@@ -27,18 +35,10 @@ Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	9dd745830f302d70d0b728013c1d6a0c
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
-%if %{with kernel}
-%if %{with dist_kernel}
-BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7
-%endif
-%endif
+%{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
 BuildRequires:	rpmbuild(macros) >= 1.330
 BuildRequires:	sed >= 4.0
 Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-%ifarch sparc
-%undefine	with_smp
-%endif
 
 %description
 IPP2P is a netfilter extension to identify P2P filesharing traffic.

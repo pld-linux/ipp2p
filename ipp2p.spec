@@ -226,9 +226,9 @@ rm -rf $RPM_BUILD_ROOT
 %depmod %{_kernel_ver}smp
 
 %if %{with kernel}
+%if %{with up} || %{without dist_kernel}
 %files -n kernel%{_alt_kernel}-net-ipp2p
 %defattr(644,root,root,755)
-%if %{with up} || %{without dist_kernel}
 /lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{name}.ko*
 %endif
 

@@ -24,6 +24,7 @@ Group:		Base/Kernel
 Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	9dd745830f302d70d0b728013c1d6a0c
 Patch0:		%{name}-2.6.19.patch
+Patch1:		%{name}-2.6.21.patch
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
 %if %{with kernel}
@@ -142,6 +143,7 @@ jądra IPP2P.
 %setup -q
 sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 %patch0 -p1
+%patch1 -p1
 
 %build
 %if %{with userspace}

@@ -1,0 +1,35 @@
+--- ipp2p-0.8.2/ipt_ipp2p.c	2007-10-24 11:13:39.471192500 +0200
++++ ipp2p-0.8.2./ipt_ipp2p.c	2007-10-24 11:13:04.252991000 +0200
+@@ -748,7 +748,11 @@ match(const struct sk_buff *skb,
+ {
+     const struct ipt_p2p_info *info = matchinfo;
+     unsigned char  *haystack;
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
++    struct iphdr *ip = ip_hdr(skb);
++#else
+     struct iphdr *ip = skb->nh.iph;
++#endif
+     int p2p_result = 0, i = 0;
+ //    int head_len;
+     int hlen = ntohs(ip->tot_len)-(ip->ihl*4);	/*hlen = packet-data length*/
+@@ -882,12 +886,20 @@ static struct ipt_match ipp2p_match = { 
+ static int __init init(void)
+ {
+     printk(KERN_INFO "IPP2P v%s loading\n", IPP2P_VERSION);
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22))
++    return xt_register_match(&ipp2p_match);
++#else
+     return ipt_register_match(&ipp2p_match);
++#endif
+ }
+ 	
+ static void __exit fini(void)
+ {
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22))
++    xt_unregister_match(&ipp2p_match);
++#else
+     ipt_unregister_match(&ipp2p_match);
++#endif
+     printk(KERN_INFO "IPP2P v%s unloaded\n", IPP2P_VERSION);    
+ }
+ 	

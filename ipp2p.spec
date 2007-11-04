@@ -185,13 +185,10 @@ j±dra IPP2P.
 
 %prep
 %setup -q -n %{pname}-%{version}
-sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 
 %build
 %if %{with userspace}
-IPTABLES_VERSION="%{iptables_ver}"
-%{__cc} %{rpmcflags} -DIPTABLES_VERSION=\"$IPTABLES_VERSION\" -fPIC -c libipt_ipp2p.c
-#vim: "
+%{__cc} %{rpmcflags} -DIPTABLES_VERSION='"%{iptables_ver}"' -fPIC -c libipt_ipp2p.c
 ld %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 

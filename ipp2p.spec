@@ -24,15 +24,16 @@
 
 %define	iptables_ver	1.3.3
 %define		_rel	56
+%define		pname	ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
-Name:		ipp2p
+Name:		%{pname}%{_alt_kernel}
 Version:	0.8.2
 Release:	%{_rel}
 Epoch:		1
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
+Source0:	http://www.ipp2p.org/downloads/%{pname}-%{version}.tar.gz
 # Source0-md5:	9dd745830f302d70d0b728013c1d6a0c
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
@@ -183,7 +184,7 @@ Ten pakiet zawiera modu³ iptables potrzebny do sterowania modu³em
 j±dra IPP2P.
 
 %prep
-%setup -q
+%setup -q -n %{pname}-%{version}
 sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 
 %build
@@ -196,7 +197,7 @@ ld %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
 
 %if %{with kernel}
 # kernel module(s)
-%build_kernel_modules -m ipt_%{name}
+%build_kernel_modules -m ipt_%{pname}
 %endif
 
 %install
@@ -204,11 +205,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with userspace}
 install -d $RPM_BUILD_ROOT%{_libdir}/iptables
-install libipt_%{name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
+install libipt_%{pname}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 %endif
 
 %if %{with kernel}
-%install_kernel_modules -m ipt_%{name} -d kernel/net/ipv4/netfilter
+%install_kernel_modules -m ipt_%{pname} -d kernel/net/ipv4/netfilter
 %endif
 
 %clean
@@ -230,13 +231,13 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with up} || %{without dist_kernel}
 %files -n kernel%{_alt_kernel}-net-ipp2p
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{name}.ko*
+/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{pname}.ko*
 %endif
 
 %if %{with smp} && %{with dist_kernel}
 %files -n kernel%{_alt_kernel}-smp-net-ipp2p
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{name}.ko*
+/lib/modules/%{_kernel_ver}smp/kernel/net/ipv4/netfilter/ipt_%{pname}.ko*
 %endif
 %endif
 

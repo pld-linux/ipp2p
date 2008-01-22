@@ -11,13 +11,13 @@
 %endif
 #
 %define	iptables_ver	1.3.3
-#
-%define	_rel	11
+
+%define		rel	11
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
 Name:		ipp2p
 Version:	0.8.2
-Release:	%{_rel}
+Release:	%{rel}
 Epoch:		1
 License:	GPL
 Group:		Base/Kernel
@@ -65,7 +65,7 @@ pakietów P2P i ograniczyć wykorzystanie łącza przez nie.
 %package -n kernel%{_alt_kernel}-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
-Release:	%{_rel}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 %{?with_dist_kernel:%requires_releq_kernel}
 Requires(post,postun):	/sbin/depmod
@@ -103,7 +103,7 @@ Ten pakiet zawiera moduł jądra Linuksa.
 %package -n iptables-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
-Release:	%{_rel}
+Release:	%{rel}
 Group:		Base/Kernel
 Requires:	iptables
 

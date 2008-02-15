@@ -147,10 +147,13 @@ sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 
 %build
 %if %{with userspace}
-IPTABLES_VERSION="%{iptables_ver}"
-%{__cc} %{rpmcflags} -DIPTABLES_VERSION=\"$IPTABLES_VERSION\" -fPIC -c libipt_ipp2p.c
-#vim: "
-ld --as-needed -shared -o libipt_ipp2p.so libipt_ipp2p.o
+%{__cc} %{rpmcflags} -DIPTABLES_VERSION='"%{iptables_ver}"' -fPIC -c libipt_ipp2p.c
+#%{__cc} %{rpmldflags} -shared libipt_ipp2p.o -o libipt_ipp2p.so
+# using CC issues:
+#libipt_ipp2p.o(.text+0x720): In function `_init':
+#libipt_ipp2p.c: multiple definition of `_init'
+#/usr/lib/gcc-lib/i686-pld-linux/3.3.6/../../../crti.o(.init+0x0):/home/users/builder/rpm/BUILD/glibc-2.3.6/builddir/csu/crti.S:12: first defined here
+%{__ld} %(echo %{rpmldflags} | sed -e 's/-Wl,\(.*\)/\1/g') -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 
 %if %{with kernel}

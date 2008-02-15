@@ -6,7 +6,6 @@
 %bcond_without	smp		# don't build SMP module
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
-%bcond_with	grsec_kernel	# build for kernel-grsecurity
 
 %ifarch sparc
 %undefine	with_smp
@@ -15,21 +14,17 @@
 %if %{without kernel}
 %undefine	with_dist_kernel
 %endif
-%if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
-%define	alt_kernel	grsecurity
-%endif
 %if "%{_alt_kernel}" != "%{nil}"
 %undefine	with_userspace
 %endif
 
-%define	iptables_ver	1.3.3
-%define		_rel	61
+%define		iptables_ver	1.3.3
 %define		pname	ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
 Name:		%{pname}%{_alt_kernel}
 Version:	0.8.2
-Release:	%{_rel}
+Release:	62
 Epoch:		1
 License:	GPL
 Group:		Base/Kernel
@@ -71,9 +66,8 @@ pakietów P2P i ograniczyæ wykorzystanie ³±cza przez nie.
 %package -n kernel%{_alt_kernel}-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
-Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{?with_dist_kernel:%requires_releq_kernel_up}
+%{?with_dist_kernel:Requires:	kernel%{_alt_kernel}(vermagic) = %{_kernel_ver}}
 Requires(post,postun):	/sbin/depmod
 
 %description -n kernel%{_alt_kernel}-net-ipp2p
@@ -109,9 +103,8 @@ Ten pakiet zawiera modu³ j±dra Linuksa.
 %package -n kernel%{_alt_kernel}-smp-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
-Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{?with_dist_kernel:%requires_releq_kernel_smp}
+%{?with_dist_kernel:Requires:	kernel%{_alt_kernel}-smp(vermagic) = %{_kernel_ver}}
 Requires(post,postun):	/sbin/depmod
 
 %description -n kernel%{_alt_kernel}-smp-net-ipp2p
@@ -147,7 +140,6 @@ Ten pakiet zawiera modu³ j±dra Linuksa SMP.
 %package -n iptables-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl):	IPP2P - rozszerzenie filtra pakietów identyfikuj±ce ruch P2P
-Release:	%{_rel}
 Group:		Base/Kernel
 Requires:	iptables
 

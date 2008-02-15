@@ -24,7 +24,7 @@ Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
 Name:		%{pname}%{_alt_kernel}
 Version:	0.8.2
-Release:	62
+Release:	63
 Epoch:		1
 License:	GPL
 Group:		Base/Kernel
@@ -181,7 +181,15 @@ jądra IPP2P.
 %build
 %if %{with userspace}
 %{__cc} %{rpmcflags} -DIPTABLES_VERSION='"%{iptables_ver}"' -fPIC -c libipt_ipp2p.c
-ld %{rpmldflags} -shared -o libipt_ipp2p.so libipt_ipp2p.o
+#%{__cc} %{rpmldflags} -shared libipt_ipp2p.o -o libipt_ipp2p.so
+# using CC issues:
+#libipt_ipp2p.o: In function `_init':
+#libipt_ipp2p.c:(.text+0x720): multiple definition of `_init'
+#/usr/bin/ld: size of bfd_vma > size of splay_tree types
+#/usr/bin/ld: BFD (Linux/GNU Binutils) 2.18.50.0.4.20080208 internal error, aborting at arange-set.c line 202 in arange_set_new
+#/usr/bin/ld: Please report this bug.
+#collect2: ld returned 1 exit status
+%{__ld} %(echo %{rpmldflags} | sed -e 's/-Wl,\(.*\)/\1/g') -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 
 %if %{with kernel}

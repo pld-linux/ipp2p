@@ -4,27 +4,33 @@
 %bcond_without	kernel		# don't build kernel modules
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
-%bcond_with	grsec_kernel	# build for kernel-grsecurity
-#
-%if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
-%define	alt_kernel	grsecurity
-%endif
-#
-%define	iptables_ver	1.3.3
 
+%ifarch sparc
+%undefine	with_smp
+%endif
+
+%if %{without kernel}
+%undefine	with_dist_kernel
+%endif
+%if "%{_alt_kernel}" != "%{nil}"
+%undefine	with_userspace
+%endif
+
+%define		iptables_ver	1.3.3
+%define		pname	ipp2p
 %define		rel	14
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
-Name:		ipp2p
+Name:		%{pname}%{_alt_kernel}
 Version:	0.8.2
 Release:	%{rel}
 Epoch:		1
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
+Source0:	http://www.ipp2p.org/downloads/%{pname}-%{version}.tar.gz
 # Source0-md5:	9dd745830f302d70d0b728013c1d6a0c
-Patch0:		%{name}-2.6.19.patch
-Patch1:		%{name}-2.6.21.patch
+Patch0:		%{pname}-2.6.19.patch
+Patch1:		%{pname}-2.6.21.patch
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
 %if %{with kernel}
@@ -158,7 +164,7 @@ sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 
 %if %{with kernel}
 # kernel module(s)
-%build_kernel_modules -m ipt_%{name}
+%build_kernel_modules -m ipt_%{pname}
 %endif
 
 %install
@@ -166,11 +172,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with userspace}
 install -d $RPM_BUILD_ROOT%{_libdir}/iptables
-install libipt_%{name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
+install libipt_%{pname}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 %endif
 
 %if %{with kernel}
-%install_kernel_modules -m ipt_%{name} -d kernel/net/ipv4/netfilter
+%install_kernel_modules -m ipt_%{pname} -d kernel/net/ipv4/netfilter
 %endif
 
 %clean
@@ -185,7 +191,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with kernel}
 %files -n kernel%{_alt_kernel}-net-ipp2p
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{name}.ko*
+/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{pname}.ko*
 %endif
 
 %if %{with userspace}

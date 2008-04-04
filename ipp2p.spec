@@ -18,7 +18,7 @@
 
 %define		iptables_ver	1.3.3
 %define		pname	ipp2p
-%define		rel	14
+%define		rel	64
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
 Name:		%{pname}%{_alt_kernel}

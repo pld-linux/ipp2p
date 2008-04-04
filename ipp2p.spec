@@ -4,27 +4,33 @@
 %bcond_without	kernel		# don't build kernel modules
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
-%bcond_with	grsec_kernel	# build for kernel-grsecurity
-#
-%if %{with kernel} && %{with dist_kernel} && %{with grsec_kernel}
-%define	alt_kernel	grsecurity
+
+%ifarch sparc
+%undefine	with_smp
 %endif
-#
-%define	iptables_ver	1.3.3
-#
-%define	_rel	6
+
+%if %{without kernel}
+%undefine	with_dist_kernel
+%endif
+%if "%{_alt_kernel}" != "%{nil}"
+%undefine	with_userspace
+%endif
+
+%define		iptables_ver	1.3.3
+%define		pname	ipp2p
+%define		rel	65
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
-Name:		ipp2p
+Name:		%{pname}%{_alt_kernel}
 Version:	0.8.2
-Release:	%{_rel}
+Release:	%{rel}
 Epoch:		1
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://www.ipp2p.org/downloads/%{name}-%{version}.tar.gz
+Source0:	http://www.ipp2p.org/downloads/%{pname}-%{version}.tar.gz
 # Source0-md5:	9dd745830f302d70d0b728013c1d6a0c
-Patch0:		%{name}-2.6.19.patch
-Patch1:		%{name}-2.6.21.patch
+Patch0:		%{pname}-2.6.19.patch
+Patch1:		%{pname}-2.6.21.patch
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
 %if %{with kernel}
@@ -65,9 +71,9 @@ pakietów P2P i ograniczyć wykorzystanie łącza przez nie.
 %package -n kernel%{_alt_kernel}-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
-Release:	%{_rel}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-%{?with_dist_kernel:%requires_releq_kernel}
+%{?with_dist_kernel:Requires:	kernel%{_alt_kernel}(vermagic) = %{_kernel_ver}}
 Requires(post,postun):	/sbin/depmod
 
 %description -n kernel%{_alt_kernel}-net-ipp2p
@@ -103,7 +109,7 @@ Ten pakiet zawiera moduł jądra Linuksa.
 %package -n iptables-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
-Release:	%{_rel}
+Release:	%{rel}
 Group:		Base/Kernel
 Requires:	iptables
 
@@ -147,15 +153,18 @@ sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 
 %build
 %if %{with userspace}
-IPTABLES_VERSION="%{iptables_ver}"
-%{__cc} %{rpmcflags} -DIPTABLES_VERSION=\"$IPTABLES_VERSION\" -fPIC -c libipt_ipp2p.c
-#vim: "
-ld --as-needed -shared -o libipt_ipp2p.so libipt_ipp2p.o
+%{__cc} %{rpmcflags} -DIPTABLES_VERSION='"%{iptables_ver}"' -fPIC -c libipt_ipp2p.c
+#%{__cc} %{rpmldflags} -shared libipt_ipp2p.o -o libipt_ipp2p.so
+# using CC issues:
+#libipt_ipp2p.o(.text+0x720): In function `_init':
+#libipt_ipp2p.c: multiple definition of `_init'
+#/usr/lib/gcc-lib/i686-pld-linux/3.3.6/../../../crti.o(.init+0x0):/home/users/builder/rpm/BUILD/glibc-2.3.6/builddir/csu/crti.S:12: first defined here
+%{__ld} %(echo %{rpmldflags} | sed -e 's/-Wl,\(.*\)/\1/g') -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 
 %if %{with kernel}
 # kernel module(s)
-%build_kernel_modules -m ipt_%{name}
+%build_kernel_modules -m ipt_%{pname}
 %endif
 
 %install
@@ -163,11 +172,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with userspace}
 install -d $RPM_BUILD_ROOT%{_libdir}/iptables
-install libipt_%{name}.so $RPM_BUILD_ROOT%{_libdir}/iptables
+install libipt_%{pname}.so $RPM_BUILD_ROOT%{_libdir}/iptables
 %endif
 
 %if %{with kernel}
-%install_kernel_modules -m ipt_%{name} -d kernel/net/ipv4/netfilter
+%install_kernel_modules -m ipt_%{pname} -d kernel/net/ipv4/netfilter
 %endif
 
 %clean
@@ -182,7 +191,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with kernel}
 %files -n kernel%{_alt_kernel}-net-ipp2p
 %defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{name}.ko*
+/lib/modules/%{_kernel_ver}/kernel/net/ipv4/netfilter/ipt_%{pname}.ko*
 %endif
 
 %if %{with userspace}

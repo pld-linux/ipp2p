@@ -16,9 +16,9 @@
 %undefine	with_userspace
 %endif
 
-%define		iptables_ver	1.3.3
+%define		iptables_ver	1.4.0
 %define		pname	ipp2p
-%define		rel	15
+%define		rel	16
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
 Name:		%{pname}%{_alt_kernel}
@@ -159,7 +159,7 @@ sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 #libipt_ipp2p.o(.text+0x720): In function `_init':
 #libipt_ipp2p.c: multiple definition of `_init'
 #/usr/lib/gcc-lib/i686-pld-linux/3.3.6/../../../crti.o(.init+0x0):/home/users/builder/rpm/BUILD/glibc-2.3.6/builddir/csu/crti.S:12: first defined here
-%{__ld} %(echo %{rpmldflags} | sed -e 's/-Wl,\(.*\)/\1/g') -shared -o libipt_ipp2p.so libipt_ipp2p.o
+%{__ld} %(echo %{rpmldflags} | sed -e 's/-Wl,\([^ ]*\)/\1/g') -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 
 %if %{with kernel}

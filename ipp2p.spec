@@ -18,7 +18,7 @@
 
 %define		iptables_ver	1.3.3
 %define		pname	ipp2p
-%define		rel		66
+%define		rel		67
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
 Name:		%{pname}%{_alt_kernel}
@@ -147,7 +147,7 @@ Ten pakiet zawiera moduł iptables potrzebny do sterowania modułem
 jądra IPP2P.
 
 %prep
-%setup -q
+%setup -q -n %{pname}-%{version}
 sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
 %patch0 -p1
 %patch1 -p1

@@ -20,16 +20,19 @@
 
 %define		iptables_ver	1.3.3
 %define		pname	ipp2p
+%define		rel		67
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
 Name:		%{pname}%{_alt_kernel}
 Version:	0.8.2
-Release:	64
+Release:	%{rel}
 Epoch:		1
 License:	GPL
 Group:		Base/Kernel
 Source0:	http://www.ipp2p.org/downloads/%{pname}-%{version}.tar.gz
 # Source0-md5:	9dd745830f302d70d0b728013c1d6a0c
+Patch0:		%{pname}-2.6.19.patch
+Patch1:		%{pname}-2.6.21.patch
 URL:		http://www.ipp2p.org/
 %{?with_userspace:BuildRequires:	iptables-devel >= 1.3.3}
 %{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.7}
@@ -66,9 +69,10 @@ pakietów P2P i ograniczyć wykorzystanie łącza przez nie.
 %package -n kernel%{_alt_kernel}-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
+Release:	%{rel}@%{_kernel_vermagic}
 Group:		Base/Kernel
-%{?with_dist_kernel:Requires:	kernel%{_alt_kernel}(vermagic) = %{_kernel_ver}}
 Requires(post,postun):	/sbin/depmod
+%{?with_dist_kernel:Requires:	kernel%{_alt_kernel}(vermagic) = %{_kernel_ver}}
 
 %description -n kernel%{_alt_kernel}-net-ipp2p
 IPP2P is a netfilter extension to identify P2P filesharing traffic.
@@ -103,9 +107,10 @@ Ten pakiet zawiera moduł jądra Linuksa.
 %package -n kernel%{_alt_kernel}-smp-net-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
+Release:	%{rel}@%{_kernel_vermagic}
 Group:		Base/Kernel
-%{?with_dist_kernel:Requires:	kernel%{_alt_kernel}-smp(vermagic) = %{_kernel_ver}}
 Requires(post,postun):	/sbin/depmod
+%{?with_dist_kernel:Requires:	kernel%{_alt_kernel}-smp(vermagic) = %{_kernel_ver}}
 
 %description -n kernel%{_alt_kernel}-smp-net-ipp2p
 IPP2P is a netfilter extension to identify P2P filesharing traffic.
@@ -140,6 +145,7 @@ Ten pakiet zawiera moduł jądra Linuksa SMP.
 %package -n iptables-ipp2p
 Summary:	IPP2P - a netfilter extension to identify P2P filesharing traffic
 Summary(pl.UTF-8):	IPP2P - rozszerzenie filtra pakietów identyfikujące ruch P2P
+Release:	%{rel}
 Group:		Base/Kernel
 Requires:	iptables
 
@@ -177,19 +183,19 @@ jądra IPP2P.
 
 %prep
 %setup -q -n %{pname}-%{version}
+sed -i "s:shell iptables:shell %{_sbindir}/iptables:" Makefile
+%patch0 -p1
+%patch1 -p1
 
 %build
 %if %{with userspace}
 %{__cc} %{rpmcflags} -DIPTABLES_VERSION='"%{iptables_ver}"' -fPIC -c libipt_ipp2p.c
 #%{__cc} %{rpmldflags} -shared libipt_ipp2p.o -o libipt_ipp2p.so
 # using CC issues:
-#libipt_ipp2p.o: In function `_init':
-#libipt_ipp2p.c:(.text+0x720): multiple definition of `_init'
-#/usr/bin/ld: size of bfd_vma > size of splay_tree types
-#/usr/bin/ld: BFD (Linux/GNU Binutils) 2.18.50.0.4.20080208 internal error, aborting at arange-set.c line 202 in arange_set_new
-#/usr/bin/ld: Please report this bug.
-#collect2: ld returned 1 exit status
-%{__ld} %(echo %{rpmldflags} | sed -e 's/-Wl,\(.*\)/\1/g') -shared -o libipt_ipp2p.so libipt_ipp2p.o
+#libipt_ipp2p.o(.text+0x720): In function `_init':
+#libipt_ipp2p.c: multiple definition of `_init'
+#/usr/lib/gcc-lib/i686-pld-linux/3.3.6/../../../crti.o(.init+0x0):/home/users/builder/rpm/BUILD/glibc-2.3.6/builddir/csu/crti.S:12: first defined here
+%{__ld} %(echo %{rpmldflags} | sed -e 's/-Wl,\([^ ]*\)/\1/g') -shared -o libipt_ipp2p.so libipt_ipp2p.o
 %endif
 
 %if %{with kernel}

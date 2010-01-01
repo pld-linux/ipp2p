@@ -40,7 +40,7 @@ BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.20.2
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.379
 BuildRequires:	sed >= 4.0
-Buildroot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 IPP2P is a netfilter extension to identify P2P filesharing traffic.
